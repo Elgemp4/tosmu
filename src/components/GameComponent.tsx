@@ -4,7 +4,7 @@ import { GridComponent } from "./GridComponent";
 import '../styles/Game.sass'
 import Keyboard from "./Keyboard";
 
-export function Game() {
+export function GameComponent() {
   return <>
     <h1>Tusmo</h1>
     <GameProvider>

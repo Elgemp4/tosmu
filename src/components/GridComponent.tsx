@@ -1,4 +1,4 @@
-import { useGridContext, useWordContext } from "./GameProvider"
+import { useGameContext } from "./GameProvider"
 import Grid from "../models/Grid";
 import { CellComponent } from "./CellComponent";
 import "../styles/GridComponent.sass"
@@ -9,16 +9,13 @@ export interface GridPropsType{
 
 
 export function GridComponent() {
-    const gridContext = useGridContext();
-    const wordContext = useWordContext();
+    const gameContext = useGameContext();
     
-    if(gridContext == undefined || wordContext== undefined) {
+    if(gameContext == undefined ) {
         throw new Error("Missing context in grid component !");
     }
-
-    const {wordLength, tryCount} = wordContext;
     
-    const {getLetterAt, getStateAt} = gridContext;
+    const {getLetterAt, getStateAt, wordLength, tryCount} = gameContext;
 
     const cells = new Array<JSX.Element>();
 

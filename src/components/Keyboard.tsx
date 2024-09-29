@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useGridContext, useWordContext } from "./GameProvider";
+import { useGameContext } from "./GameProvider";
 
 const validInputs = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i));
 
@@ -13,43 +13,27 @@ export default function Keyboard() {
         }
     }, []);
     
-    const gridContext = useGridContext();
-    const wordContext = useWordContext();
+    const gameContext = useGameContext();
     
-    if(gridContext == undefined || wordContext == undefined) {
+    if(gameContext == undefined) {
         return;
     }
 
-    const {setLetterAt} = gridContext;
-
-    const {wordLength, checkWord} = wordContext;
-
-    let typeIndex = 1;
+    const {typeLetter, deleteLetter, checkWord} = gameContext;
 
     function handleKeyPress(e : KeyboardEvent)
     {
         const key = e.key.toUpperCase();
-        console.log(key)
+
         if(key == "BACKSPACE"){
-            if(typeIndex == 1){
-                return;
-            }
-            setLetterAt(typeIndex - 1, ".");
-            typeIndex--
+            deleteLetter();
         }
         else if(key == "ENTER"){
-            if(checkWord()){
-                typeIndex = 1;
-            }
+            checkWord();
         }
         else if(validInputs.indexOf(key) != -1){
-            if(typeIndex == wordLength){
-                return;
-            }
-            setLetterAt(typeIndex, key);
-            typeIndex++
+            typeLetter(key);
         }
-        
     }
     
     return <></>

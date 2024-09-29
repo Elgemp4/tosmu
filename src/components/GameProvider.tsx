@@ -1,159 +1,118 @@
-import { createContext, useContext, useEffect, useRef, useState } from "react"
-
-import Grid from "../models/Grid"
+import { createContext, useContext, useEffect, useState } from "react"
 import { CellState } from "../models/Cell"
-import axios from "axios"
+import Game from "../models/Game"
+import axios from "axios";
 
-export interface WordContextType{
+export interface GameContextType{
     wordLength: number,
     wordFirstLetter: string,
     tryCount: number,
-    checkWord: () => boolean
-}
-
-export interface GridContextType{
-    getLetterAt : (x: number, y:number) => string,
-    getStateAt : (x: number, y:number) => CellState,
-    setLetterAt : (index: number, value:string) => void;
+    checkWord: () => void,
+    typeLetter: (letter: string) => void,
+    deleteLetter: () => void,
+    getLetterAt: (x: number, y: number) => string,
+    getStateAt: (x: number, y: number) => CellState,
 }
 
 export interface GameProviderProps{
     children: React.ReactNode
 }
 
-const WordContext = createContext<WordContextType | undefined>(undefined);
-
-const GridContext = createContext<GridContextType | undefined>(undefined);
+const GameContext = createContext<GameContextType | undefined>(undefined);
 
 
 export function GameProvider({children} : GameProviderProps){
-    const [word, setWord] = useState("");
-    
-    const tryCount = 6;
-
-    const [grid,setGrid] = useState<Grid>(new Grid(0,0));
-
-    const [, forceUpdate] = useState({});
-
-    const wordList = useRef<string[]>([]);
+    const [game, setGame] = useState<Game | null>(null);
 
     useEffect(() => {
-        async function fetchData() {
-            const result = await axios.get("french.txt")
-            
-            wordList.current = result.data.split("\r\n")  
+        async function getWord() {
+            const result = await axios.get("french.txt");
 
-            const newWord = wordList.current[2].toUpperCase();
-            setWord(newWord);
-            setGrid(new Grid(newWord.length, tryCount))
-            
-        }
-        fetchData();        
-    }, [])
+            const wordList = result.data.split("\r\n")  
 
-    useEffect(() => {
-        if(grid.WordLength != 0){
-            setDefaultText();
+            const word = wordList[2].toUpperCase();
+            setGame(new Game(word));
+            console.log("loaded");
         }
-        else{
-            return 
-        }
-    }, [grid])
+        getWord();
+    }, []);
 
-    if(grid.WordLength == 0){
-        return <div>Loading ...</div>
+    console.log(game)
+    //const [,setUpdate] = useState({});
+
+    if( game == null){
+        return <div>Loading...</div>
     }
+
+    const wordLength = game.wordLength;
+    const wordFirstLetter = game.wordFirstLetter;
+    const tryCount = game.tryCount;
 
     function checkWord() {
-        let wordCopy = word;
-
-        if(grid.getLetterInCurrentRow(word.length-1) == "."){
-            return false;
-        }
-        
-        wordCopy = findWellPlaced(wordCopy);
-        findMissPlaced(wordCopy);
-        
-        nextRow();
-
-        forceUpdate({});
-
-        return true
-    }
-
-    function findWellPlaced(wordCopy : string){
-        for(let i = 0; i < word.length; i++){
-            const letter = grid.getLetterInCurrentRow(i) ;
-            if(letter == word[i]){
-                grid.setStateAt(i, CellState.Correct);
-                wordCopy = wordCopy.replace(letter, " ")
+        setGame(() => {
+            if(game == null){
+                return;
             }
-        }
 
-        return wordCopy;
+            game.checkWord();
+            return JSON.parse(JSON.stringify(game));
+        });
     }
 
-    function findMissPlaced(wordCopy : string) {
-        for(let i = 0; i < word.length; i++){
-            const letter = grid.getLetterInCurrentRow(i) ;
-            if(letter == CellState.Correct){
-                continue;
+    function typeLetter(letter: string) {
+        setGame(() => {
+            if(game == null){
+                return;
             }
-            if(wordCopy.indexOf(grid.getLetterInCurrentRow(i)) != -1)
-            {
-                grid.setStateAt(i, CellState.Misplaced);
-                wordCopy = wordCopy.replace(letter, " ")
+
+            console.log(typeLetter);
+
+            game.typeLetter(letter);
+            return JSON.parse(JSON.stringify(game));
+        });
+    }
+
+    function deleteLetter() {
+        setGame(() => {
+            if(game == null){
+                return;
             }
-        }
+
+            game.deleteLetter();
+            return JSON.parse(JSON.stringify(game));
+        });
     }
 
-    function nextRow() {
-        grid.nextRow();
-        setDefaultText();
-    }
-
-    function setDefaultText(){
-        setLetterAt(0, word[0]);
-
-        for(let i = 1; i < word.length; i++){
-            setLetterAt(i, ".");
+    function getLetterAt(x: number, y: number){
+        if(game == null){
+            return "";
         }
 
-        forceUpdate({});
+        return game.getLetterAt(x, y);
     }
 
-    function setLetterAt(index: number, value : string) {
-        grid.setLetterAt(index, value);
-        console.log(index, value)
-        forceUpdate({});
+    function getStateAt(x: number, y: number){
+        if(game == null){
+            return CellState.Incorrect;
+        }
+
+        return game.getStateAt(x, y);
     }
 
-    function getLetterAt(x : number, y : number) {
-        return grid.getLetterAt(x, y);
-    }
-
-    function getStateAt(x : number, y : number){
-        return grid.getStateAt(x, y);
-    }
-
-    return <WordContext.Provider value={{
-        wordLength: word.length, 
-        wordFirstLetter: word[0], 
+    return <GameContext.Provider value={{
+        wordLength,
+        wordFirstLetter,
         tryCount,
-        checkWord}}>
-        <GridContext.Provider value={{
-            getLetterAt, 
-            getStateAt,
-            setLetterAt}}>
-            {children}
-        </GridContext.Provider>
-    </WordContext.Provider>
+        checkWord,
+        typeLetter,
+        deleteLetter,
+        getLetterAt,
+        getStateAt
+    }}>
+        {children}
+    </GameContext.Provider>
 }
 
-export function useWordContext(){
-    return useContext(WordContext);
-}
-
-export function useGridContext(){
-    return useContext(GridContext);
+export function useGameContext(){
+    return useContext(GameContext);
 }

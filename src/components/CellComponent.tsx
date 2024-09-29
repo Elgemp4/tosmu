@@ -7,9 +7,6 @@ interface CellComponentProps {
 }
 
 export function CellComponent({letter, state} : CellComponentProps) {
-    
-
-
     return <div className={'cell '+ state.toString()}>
         {letter}
     </div>

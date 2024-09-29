@@ -1,6 +1,8 @@
+
 import { Cell, CellState } from "./Cell";
 
 export default class Grid{
+
     private _cellGrid : Cell[][];
 
     private _tryCount : number;

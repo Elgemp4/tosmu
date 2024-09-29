@@ -1,3 +1,5 @@
+
+
 export enum CellState {
     Incorrect = "incorrect", 
     Correct = "correct", 
@@ -6,6 +8,7 @@ export enum CellState {
 
 
 export class Cell{
+    
     private _cellState : CellState;
     private _cellLetter : string;
 
