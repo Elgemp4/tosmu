@@ -37,6 +37,11 @@ export default class Game{
         return this._tryCount;
     }
 
+    get isGameOver() {
+        console.log(this._tryCount, this._grid.CurrentRow)
+        return this._tryCount == this._grid.CurrentRow - 1;
+    }
+
     public clone(){
         const proto = Object.getPrototypeOf(this); //Récupère la structure
         const newObjectStrucutre  = Object.create(proto); //Créer un nouvel objet avec la même strucutre
@@ -48,6 +53,11 @@ export default class Game{
         if(this._typeIndex >= this.wordLength){
             return this;
         }
+        console.log(this.isGameOver);
+        if(this.isGameOver){
+            return this;
+        }
+
         this._grid.setLetterAt(this._typeIndex, letter);
         this._typeIndex++;
         
@@ -58,6 +68,9 @@ export default class Game{
         if(this._typeIndex != 1){
             this._typeIndex--;
             this._grid.setLetterAt(this._typeIndex, ".");
+        }
+        if(this.isGameOver){
+            return this;
         }
 
         return this.clone();
@@ -116,7 +129,10 @@ export default class Game{
 
     private nextRow() {
         this._grid.nextRow();
-        this.setDefaultText();
+        if(!this.isGameOver){
+            this.setDefaultText();
+
+        }
     }
 
     private setDefaultText(){

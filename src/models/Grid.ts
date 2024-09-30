@@ -19,11 +19,6 @@ export default class Grid{
                     () => Array.from({length: wordLength}, () => new Cell()));
 
         this._currentRow = 0;
-
-        /*this.getLetterAt = this.getLetterAt.bind(this);
-        this.setLetterAt = this.setLetterAt.bind(this);
-        this.getStateAt = this.getStateAt.bind(this);
-        this.setStateAt = this.setStateAt.bind(this);*/
     }
 
     get CurrentRow() {
@@ -39,7 +34,7 @@ export default class Grid{
     }
 
     public nextRow() {
-        if(this._currentRow + 1 >= this._tryCount){
+        if(this._currentRow >= this._tryCount){
             throw Error("Out of bounds");
         }
 

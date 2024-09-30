@@ -23,20 +23,17 @@ const GameContext = createContext<GameContextType | undefined>(undefined);
 
 export function GameProvider({children} : GameProviderProps){
     const [game, setGame] = useState<Game | null>(null);
-    console.log(game);
     useEffect(() => {
         async function getWord() {
             const result = await axios.get("french.txt");
 
             const wordList = result.data.split("\r\n")  
-
-            const word = wordList[2].toUpperCase();
+            
+            const word = wordList[Math.round((Math.random() * wordList.length))].toUpperCase();
             setGame(new Game(word));
-            console.log("loaded");
         }
         getWord();
     }, []);
-    console.log(game);
     //const [,setUpdate] = useState({});
 
     if( game == null){
