@@ -46,11 +46,11 @@ export default class Game{
 
     public typeLetter(letter : string) {
         if(this._typeIndex >= this.wordLength){
-            return;
+            return this;
         }
         this._grid.setLetterAt(this._typeIndex, letter);
         this._typeIndex++;
-
+        
         return this.clone();
     }
 
@@ -70,6 +70,8 @@ export default class Game{
             return this.clone();
         }
         
+        this._typeIndex = 1;
+
         wordCopy = this.findWellPlaced(wordCopy);
         this.findMissPlaced(wordCopy);
         

@@ -23,7 +23,7 @@ const GameContext = createContext<GameContextType | undefined>(undefined);
 
 export function GameProvider({children} : GameProviderProps){
     const [game, setGame] = useState<Game | null>(null);
-
+    console.log(game);
     useEffect(() => {
         async function getWord() {
             const result = await axios.get("french.txt");
@@ -36,8 +36,7 @@ export function GameProvider({children} : GameProviderProps){
         }
         getWord();
     }, []);
-
-    console.trace("ici")
+    console.log(game);
     //const [,setUpdate] = useState({});
 
     if( game == null){
@@ -52,24 +51,21 @@ export function GameProvider({children} : GameProviderProps){
         if(game == null)
             return;
 
-        setGame(() => game.checkWord());
+        setGame(game.checkWord());
     }
 
     function typeLetter(letter: string) {
-        setGame((g) => {
-            if(g == null){
-                return g;
-            } 
+        if(game == null)
+            return;
 
-            return g.typeLetter(letter);
-        });
+        setGame(game.typeLetter(letter));
     }
 
     function deleteLetter() {
         if(game == null)
             return;
-        game.deleteLetter()
-        setGame(game);
+
+        setGame(game.deleteLetter());
     }
 
     function getLetterAt(x: number, y: number){
