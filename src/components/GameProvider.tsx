@@ -37,7 +37,7 @@ export function GameProvider({children} : GameProviderProps){
         getWord();
     }, []);
 
-    console.log(game)
+    console.trace("ici")
     //const [,setUpdate] = useState({});
 
     if( game == null){
@@ -49,38 +49,27 @@ export function GameProvider({children} : GameProviderProps){
     const tryCount = game.tryCount;
 
     function checkWord() {
-        setGame(() => {
-            if(game == null){
-                return;
-            }
+        if(game == null)
+            return;
 
-            game.checkWord();
-            return JSON.parse(JSON.stringify(game));
-        });
+        setGame(() => game.checkWord());
     }
 
     function typeLetter(letter: string) {
-        setGame(() => {
-            if(game == null){
-                return;
-            }
+        setGame((g) => {
+            if(g == null){
+                return g;
+            } 
 
-            console.log(typeLetter);
-
-            game.typeLetter(letter);
-            return JSON.parse(JSON.stringify(game));
+            return g.typeLetter(letter);
         });
     }
 
     function deleteLetter() {
-        setGame(() => {
-            if(game == null){
-                return;
-            }
-
-            game.deleteLetter();
-            return JSON.parse(JSON.stringify(game));
-        });
+        if(game == null)
+            return;
+        game.deleteLetter()
+        setGame(game);
     }
 
     function getLetterAt(x: number, y: number){

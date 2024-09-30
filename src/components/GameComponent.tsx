@@ -6,7 +6,7 @@ import Keyboard from "./Keyboard";
 
 export function GameComponent() {
   return <>
-    <h1>Tusmo</h1>
+    <h1>Tosmu</h1>
     <GameProvider>
       <GridComponent></GridComponent>
       <Keyboard></Keyboard>

@@ -6,6 +6,7 @@ const validInputs = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 
 
 export default function Keyboard() {
     useEffect(() => {
+        console.log(document);
         document.addEventListener("keydown", handleKeyPress);
         
         return () => {
@@ -23,6 +24,7 @@ export default function Keyboard() {
 
     function handleKeyPress(e : KeyboardEvent)
     {
+        console.log("keypress")
         const key = e.key.toUpperCase();
 
         if(key == "BACKSPACE"){

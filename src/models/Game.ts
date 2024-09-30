@@ -37,12 +37,21 @@ export default class Game{
         return this._tryCount;
     }
 
+    public clone(){
+        const proto = Object.getPrototypeOf(this); //Récupère la structure
+        const newObjectStrucutre  = Object.create(proto); //Créer un nouvel objet avec la même strucutre
+        const clone = Object.assign(newObjectStrucutre, this); //Copie les données dans l'object 
+        return clone;
+    }
+
     public typeLetter(letter : string) {
         if(this._typeIndex >= this.wordLength){
             return;
         }
         this._grid.setLetterAt(this._typeIndex, letter);
         this._typeIndex++;
+
+        return this.clone();
     }
 
     public deleteLetter() {
@@ -50,13 +59,15 @@ export default class Game{
             this._typeIndex--;
             this._grid.setLetterAt(this._typeIndex, ".");
         }
+
+        return this.clone();
     }
 
     public checkWord() {
         let wordCopy = this._choosenWord;
 
         if(this._grid.getLetterInCurrentRow(this._choosenWord.length-1) == "."){
-            return false;
+            return this.clone();
         }
         
         wordCopy = this.findWellPlaced(wordCopy);
@@ -64,7 +75,7 @@ export default class Game{
         
         this.nextRow();
 
-        return true
+        return this.clone();
     }
 
     public getLetterAt(x: number, y: number) {
